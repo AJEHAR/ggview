@@ -1,9 +1,9 @@
 {
-  "name": "pTracker",
-  "short_name": "pTracker",
+  "name": "ggview",
+  "short_name": "ggview",
   "description": "Personal Tracker App",
-  "start_url": "/ptracker/",
-  "scope": "/ptracker/",
+  "start_url": "/ggview/",
+  "scope": "/ggview/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#f472b6",
