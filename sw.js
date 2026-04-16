@@ -1,10 +1,10 @@
-const CACHE_NAME = 'ptracker-v1';
+const CACHE_NAME = 'ggview-v1';
 const STATIC_ASSETS = [
-  '/ptracker/',
-  '/ptracker/index.html',
-  '/ptracker/manifest.json',
-  '/ptracker/icon-192.png',
-  '/ptracker/icon-512.png'
+  '/ggview/',
+  '/ggview/index.html',
+  '/ggview/manifest.json',
+  '/ggview/icon-192.png',
+  '/ggview/icon-512.png'
 ];
 
 // Install — cache static assets
