@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>pTracker</title>
+  <title>ggview</title>
 
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json" />
@@ -14,7 +14,7 @@
   <!-- iOS PWA Support -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="pTracker" />
+  <meta name="apple-mobile-web-app-title" content="ggview" />
   <link rel="apple-touch-icon" href="icon-192.png" />
 
   <!-- Favicon -->
@@ -97,8 +97,8 @@
 
   <!-- Splash Screen -->
   <div id="splash">
-    <img src="icon-192.png" alt="pTracker Logo" />
-    <h1>pTracker</h1>
+    <img src="icon-192.png" alt="ggview Logo" />
+    <h1>ggview</h1>
     <p>Memuatkan...</p>
     <div class="spinner"></div>
   </div>
@@ -106,7 +106,7 @@
   <!-- App iframe -->
   <iframe
     id="app"
-    src="https://script.google.com/macros/s/AKfycbx3WrEmO6aS7D5_U8_X_exO-4Y6ploWblDytgoX5Snb5HuWLXA0ZzZ-BeuBMfKfGddh/exec"
+    src="https://script.google.com/macros/s/AKfycbzJdUICFNhUcMpZbCe009iOwnUovJ8hbmvi40PH0lpfV1LD8ge7lMGgcdDfFP-B-P8u/exec?page=guru"
     allow="camera; microphone; geolocation"
     onload="hideSplash()"
   ></iframe>
@@ -125,7 +125,7 @@
     // Register Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/ptracker/sw.js', { scope: '/ptracker/' })
+        navigator.serviceWorker.register('/ggview/sw.js', { scope: '/ggview/' })
           .then(reg => console.log('[SW] Registered:', reg.scope))
           .catch(err => console.warn('[SW] Error:', err));
       });
