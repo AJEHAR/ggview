@@ -136,6 +136,9 @@
     .dd-item-name{flex:1;font-size:var(--fs-sm);font-weight:700;color:var(--text);}
     .dd-item-name em{color:var(--teal);font-style:normal;font-weight:800;}
     .dd-item-short{font-size:.65rem;font-weight:800;color:white;background:var(--navy-light);border-radius:6px;padding:3px 8px;flex-shrink:0;}
+    .dd-item-fav{font-size:1rem;color:#d1d5db;flex-shrink:0;padding:4px;cursor:pointer;}
+    .dd-item-fav:hover{color:#f59e0b;}
+    .dd-item-fav.is-fav{color:#f59e0b;}
     .dd-empty{padding:24px;text-align:center;color:var(--muted);font-size:var(--fs-sm);}
     .dd-empty i{display:block;font-size:1.4rem;margin-bottom:8px;color:var(--border);}
 
@@ -454,6 +457,32 @@ const EXEC_URL = 'https://script.google.com/macros/s/AKfycbzNOlOcJYvcChoHSOJ5ieY
 let teachers=[], classList=[], board=null, selT=null, selKelas=null, tab='saya', loading=false, ddActive=-1;
 
 /* ═══════════════════════════════════════
+   FAVOURITE & INGAT GURU TERAKHIR (localStorage — per device sahaja)
+═══════════════════════════════════════ */
+const LS_FAV  = 'ggview_favTeachers';   // array of teacher id
+const LS_LAST = 'ggview_lastTeacher';   // single teacher id
+
+function getFavourites(){
+  try { return JSON.parse(localStorage.getItem(LS_FAV) || '[]'); }
+  catch(e){ return []; }
+}
+function isFavourite(id){ return getFavourites().includes(id); }
+function toggleFavourite(id){
+  let favs = getFavourites();
+  if(favs.includes(id)) favs = favs.filter(x=>x!==id);
+  else favs.push(id);
+  localStorage.setItem(LS_FAV, JSON.stringify(favs));
+  renderDD(document.getElementById('tsearch') ? document.getElementById('tsearch').value : '');
+}
+function getLastTeacher(){
+  try { return localStorage.getItem(LS_LAST) || null; }
+  catch(e){ return null; }
+}
+function setLastTeacher(id){
+  try { localStorage.setItem(LS_LAST, id); } catch(e){}
+}
+
+/* ═══════════════════════════════════════
    INIT
 ═══════════════════════════════════════ */
 window.addEventListener('load',()=>{
@@ -513,6 +542,16 @@ function loadData(){
       board     = res.board     || {success:false};
       renderDD('');
       populateKelasDropdown();
+
+      // Auto-pilih guru terakhir (device ni sahaja) — hanya sekali, bila belum ada pilihan lagi
+      if(!selT){
+        const lastId = getLastTeacher();
+        if(lastId){
+          const t = teachers.find(x=>x.id===lastId);
+          if(t) selectT(t.id);
+        }
+      }
+
       renderTab();
     })
     .catch(err=>{
@@ -961,7 +1000,14 @@ function renderClassTimetable(ct){
 ═══════════════════════════════════════ */
 function getFiltered(q){
   const ql=q.trim().toLowerCase();
-  return ql ? teachers.filter(t=>t.name.toLowerCase().includes(ql)||(t.short||'').toLowerCase().includes(ql)) : teachers;
+  const base = ql ? teachers.filter(t=>t.name.toLowerCase().includes(ql)||(t.short||'').toLowerCase().includes(ql)) : teachers;
+  const favs = getFavourites();
+  // Susun: favourite dahulu (ikut nama), kemudian selebihnya (ikut nama)
+  return [...base].sort((a,b)=>{
+    const fa=favs.includes(a.id), fb=favs.includes(b.id);
+    if(fa!==fb) return fa? -1:1;
+    return a.name.localeCompare(b.name);
+  });
 }
 
 function getInitials(name){
@@ -983,10 +1029,14 @@ function renderDD(q){
   const ql=q.trim().toLowerCase();
   dd.innerHTML=f.slice(0,50).map((t,i)=>{
     const hl=ql ? t.name.replace(new RegExp('('+escRx(ql)+')','gi'),'<em>$1</em>') : t.name;
+    const fav=isFavourite(t.id);
     return `<div class="dd-item" data-idx="${i}" onmousedown="selectT('${escJs(t.id)}')">
       <div class="dd-item-avatar">${esc(getInitials(t.name))}</div>
       <span class="dd-item-name">${hl}</span>
       ${t.short?`<span class="dd-item-short">${esc(t.short)}</span>`:''}
+      <i class="${fav?'fas':'far'} fa-star dd-item-fav ${fav?'is-fav':''}"
+         onmousedown="event.stopPropagation();toggleFavourite('${escJs(t.id)}')"
+         title="${fav?'Buang dari kegemaran':'Tambah ke kegemaran'}"></i>
     </div>`;
   }).join('');
   ddActive=-1;
@@ -1021,6 +1071,7 @@ function highlightDD(items){
 function selectT(id){
   const t=teachers.find(x=>x.id===id); if(!t) return;
   selT=t; closeDD();
+  setLastTeacher(t.id);
   document.getElementById('search-card').classList.add('hidden');
   const bn=document.getElementById('t-banner');
   bn.classList.remove('hidden');
