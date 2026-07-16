@@ -3,8 +3,8 @@
   "short_name": "ggview",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#fdf2f0",
-  "theme_color": "#f472b6",
+  "background_color": "#010c5e",
+  "theme_color": "#000412",
   "orientation": "portrait",
   "icons": [
     {
